@@ -21,14 +21,14 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(requestLogger); // подключаем логгер запросов
 
-app.post('/signin', celebrate({
+app.post('/api/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(2).max(30),
   }),
 }), login);
 
-app.post('/signup', celebrate({
+app.post('/api/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     email: Joi.string().required().email(),
@@ -37,8 +37,8 @@ app.post('/signup', celebrate({
 }), createUser);
 
 app.use(auth);
-app.use('/users', routerUser);
-app.use('/movies', routerMovie);
+app.use('/api/users', routerUser);
+app.use('/api/movies', routerMovie);
 
 app.all('*', (req, res, next) => {
   next(new NotFound('Страница с таким url не найдена'));
