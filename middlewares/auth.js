@@ -1,13 +1,16 @@
-const { SECRET_KEY } = process.env;
+const { NODE_ENV, SECRET_KEY } = process.env;
 const jwt = require('jsonwebtoken');
 const UnauthorizedError = require('../errors/unauthorizedError');
 
-// eslint-disable-next-line consistent-return
+const {
+  authErrorText,
+} = require('../utils/constants');
+
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    next(new UnauthorizedError('Необходима авторизация'));
+    next(new UnauthorizedError(authErrorText));
     return;
   }
 
@@ -15,9 +18,9 @@ module.exports = (req, res, next) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, SECRET_KEY);
+    payload = jwt.verify(token, NODE_ENV === 'production' ? SECRET_KEY : 'some-secret-key');
   } catch (err) {
-    next(new UnauthorizedError('Необходима авторизация'));
+    next(new UnauthorizedError(authErrorText));
     return;
   }
 

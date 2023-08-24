@@ -1,4 +1,4 @@
-const { SECRET_KEY } = process.env;
+const { NODE_ENV, SECRET_KEY } = process.env;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
@@ -8,16 +8,21 @@ const NotFound = require('../errors/notFoundError');
 const ConflictError = require('../errors/conflictError');
 const UnauthorizedError = require('../errors/unauthorizedError');
 
+const {
+  badRequestText,
+  emailAlredyExistsText,
+  userNotFoundText,
+  invalidPasswordOrEmailText,
+} = require('../utils/constants');
+
 const login = (req, res, next) => {
   const { email, password } = req.body;
-
-  // console.log(req.body);
   return User.findUserByCredentials(email, password).then((user) => {
-    const token = jwt.sign({ _id: user._id }, SECRET_KEY, { expiresIn: '7d' });
+    const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? SECRET_KEY : 'some-secret-key', { expiresIn: '7d' });
     res.send({ token });
   })
     .catch(() => {
-      next(new UnauthorizedError('Переданы некорректные данные'));
+      next(new UnauthorizedError(invalidPasswordOrEmailText));
     });
 };
 
@@ -25,7 +30,7 @@ const getUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        next(new NotFound('Пользователь не найден'));
+        next(new NotFound(userNotFoundText));
         return;
       }
       res.send(user);
@@ -50,9 +55,9 @@ const createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.code === 11000) {
-        next(new ConflictError(`${email} уже существует`));
+        next(new ConflictError(emailAlredyExistsText));
       } else if (err.name === 'ValidationError') {
-        next(new BadRequest('Переданы некорректные данные'));
+        next(new BadRequest(badRequestText));
       } else {
         next(err);
       }
@@ -68,14 +73,16 @@ const updateProfile = (req, res, next) => {
   )
     .then((updatedUser) => {
       if (!updatedUser) {
-        next(new NotFound('Пользователь не найден'));
+        next(new NotFound(userNotFoundText));
         return;
       }
       res.send({ updatedUser });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequest('Переданы некорректные данные'));
+        next(new BadRequest(badRequestText));
+      } else if (err.code === 11000) {
+        next(new ConflictError(emailAlredyExistsText));
       } else {
         next(err);
       }
