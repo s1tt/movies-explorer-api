@@ -1,15 +1,15 @@
-const express = require('express');
-require('dotenv').config();
+const express = require("express");
+require("dotenv").config();
 
 const app = express();
-const mongoose = require('mongoose');
-const { errors } = require('celebrate');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const { requestLogger, errorLogger } = require('./middlewares/logger');
-const errorHandler = require('./middlewares/errorHandler');
-const router = require('./routes/index');
-const { DATABASE } = require('./utils/constants');
+const mongoose = require("mongoose");
+const { errors } = require("celebrate");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
+const errorHandler = require("./middlewares/errorHandler");
+const router = require("./routes/index");
+const { DATABASE } = require("./utils/constants");
 
 const { PORT, DB_URL = DATABASE } = process.env;
 

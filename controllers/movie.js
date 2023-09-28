@@ -1,15 +1,15 @@
-const Movie = require('../models/movie');
+const Movie = require("../models/movie");
 
-const BadRequest = require('../errors/badRequestError');
-const NotFound = require('../errors/notFoundError');
-const ForbiddenError = require('../errors/forbiddenError');
+const BadRequest = require("../errors/badRequestError");
+const NotFound = require("../errors/notFoundError");
+const ForbiddenError = require("../errors/forbiddenError");
 
 const {
   badRequestText,
   movieNotFoundText,
   accessErrorText,
   filmDeletedText,
-} = require('../utils/constants');
+} = require("../utils/constants");
 
 // возвращает все сохранённые текущим пользователем фильмы
 const getMovies = (req, res, next) => {
@@ -55,7 +55,8 @@ const createMovie = (req, res, next) => {
   })
     .then((movie) => res.send({ movie }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      console.log(err);
+      if (err.name === "ValidationError") {
         next(new BadRequest(badRequestText));
       } else {
         next(err);
@@ -75,14 +76,15 @@ const deleteMovie = (req, res, next) => {
         next(new ForbiddenError(accessErrorText));
         return;
       }
-      movie.deleteOne()
+      movie
+        .deleteOne()
         .then(() => {
           res.send({ message: filmDeletedText });
         })
         .catch(next);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === "CastError") {
         next(new BadRequest(badRequestText));
       } else {
         next(err);

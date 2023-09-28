@@ -1,18 +1,18 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+const mongoose = require("mongoose");
+const validator = require("validator");
 
 const movieSchema = new mongoose.Schema({
   country: {
     type: String,
     required: true,
     minLength: 2,
-    maxLength: 30,
+    maxLength: 300,
   },
   director: {
     type: String,
     required: true,
     minLength: 2,
-    maxLength: 30,
+    maxLength: 300,
   },
   duration: {
     type: Number,
@@ -22,13 +22,13 @@ const movieSchema = new mongoose.Schema({
     type: String,
     required: true,
     minLength: 2,
-    maxLength: 30,
+    maxLength: 300,
   },
   description: {
     type: String,
     required: true,
     minLength: 2,
-    maxLength: 300,
+    maxLength: 3000,
   },
   image: {
     type: String,
@@ -58,6 +58,7 @@ const movieSchema = new mongoose.Schema({
   movieId: {
     type: Number,
     required: true,
+    unique: true,
   },
   nameRU: {
     type: String,
@@ -69,4 +70,4 @@ const movieSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('movie', movieSchema);
+module.exports = mongoose.model("movie", movieSchema);
